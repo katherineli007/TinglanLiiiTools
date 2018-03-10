@@ -10,5 +10,5 @@ dplyrWrapper(x)
 \item{x}{data-frame}
 }
 \description{
-manipulate margins and select data
+manipulate margins and count the frequency of data
 }

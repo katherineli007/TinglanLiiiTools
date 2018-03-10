@@ -16,7 +16,7 @@ plotMyData<-function(x){
 
 #' dplyr wrapper function for acquiring marginals using function dplyr
 #'
-#' manipulate margins and select data
+#' manipulate margins and count the frequency of data
 #'
 #' @param x data-frame
 #'

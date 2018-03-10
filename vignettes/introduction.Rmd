@@ -1,5 +1,5 @@
 ---
-title: "TinglanTools Vignette examples"
+title: "Introduction to my package TinglanTools"
 author: "Tinglan Li"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -9,65 +9,89 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE,comment = "#>")
+  options(tibble.print_min = 4L, tibble.print_max = 4L)
+library(dplyr)
+library(ggplot2)
+library(magrittr)
+library(TinglanTools)
+```
+Some remainders when working with data:
+
+* Think ahead, what do you want to solve?
+
+* Describe those tasks in the form of R.
+
+* Execute the program.
+
+
+TinglanTools package makes operations fast and easy:
+
+* By constraining some user defined functions, it helps you to think about your data manipulation, for example, a MLE estimation, challenges.
+
+* Pre-defined functions will help you to solve some basic and most popular problems
+
+This document introduces you to TinglanTools's set of tools, and shows you how to apply them to data frames. TinglanTools also supports databases via the package, once you've installed, read `vignette("TinglanTools")` to learn more.
+
+
+
+## Catalogue
+TinglanTools aims to provide a function for each basic verb of data manipulation:
+* `func7()` to Computes the liklihood of any given distribution.
+* `plotMyData()` to make a neat graph.
+* `dplyrWrapper()`  wrap by using dplyr and count the frequency of data.
+* `func1()` computes basic mean, var, sd.
+* `func2()` computes the mean, variance and sd of a vector, but with user checks.
+* `func5()` computes weighted mean, var, sd.
+
+### MLE with `func7`
+
+func7 returns to you the log of the probability density function (PDF) or probability mass function (PMF), depending on whether the distribution of x is contiuous or discrete, respectively.
+You provide a function for whatever the distribution you want.
+For example, if you want a MLE with a gamma distribution:
+```{r}
+  x1=rgamma(100,3)
+func1 = function(theta, x) dgamma(x, shape = theta, log = TRUE)
+func7(x1,func1,c(0,3))
+```
+These ideas also applies to "cauchy" or "binomial" distributions
+
+### Plot with `plotMyData`
+`plotMyData` allows you to compute a plot for your data with good-looking geometric dots. Just add your data and put the data name into the only one parameter.
+For example:
+```{r}
+plotMyData(d)
 ```
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
-
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-#install.packages(TinglanTools)
-#library(TinglanTools)
-# plot of  ggplot2 for data d
-#Computes a neat plot
-#d <- read.table(url("http://www.stat.umn.edu/geyer/3701/data/q1p4.txt"),header = TRUE)
-#plotMyData(d)
+### Wrap with `dplyrWrapper`
+`dplyrWrapper` uses one of the dplyr package functions to help you count the frequency of each of the oberservation in a table in an efficient manner:
+```{r}
+df1 <- data.frame(x = 1:10, y = 1:10, z = 1:10)
+  dplyrWrapper(df1)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-
-# dplyr acquiring marginals using function dplyr
-# manipulate margins and select data
-#d <- read.table(url("http://www.stat.umn.edu/geyer/3701/data/q1p4.txt"),header = TRUE)
-#dplyrWrapper(d)
+### Summary with `func1`
+`func1` takes in a data set you defied as a parameter and automatically generate its mean, variance, and sd. It will return a list back to you:
+```{r}
+x <- 1:10
+#func1(x)
 ```
 
-Also a quote using `>`:
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+### Summary with `func2`
+Works exactly the same with func1, but with user checks. Note that tha data's components are nonnegative and sum to one.
+```{r}
+x <- 1:10
+func2(x)
+```
+
+
+### Summary with `func5`
+A modified function of func1. Now we will allow unequal probabilities for the data values. So now we have two vectors of the same length, call them x and p and the latter is a probability vector. Note that the components are nonnegative and sum to one. You will get a list returned with your data's mean, variance, sd.
+Here's an example:
+```{r}
+d <- read.table(url("http://www.stat.umn.edu/geyer/3701/data/q1p4.txt"),header = TRUE)
+  func5(d)
+```
+
